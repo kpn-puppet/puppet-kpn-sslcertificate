@@ -2,13 +2,13 @@ require 'spec_helper'
 
 type_class = Puppet::Type.type(:sslcertificate)
 
-EXAMPLE = {
-  :name                => 'LocalMachine\Store\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
-  :ensure              => :present,
-  :path                => 'LocalMachine\Store\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
-  :format              => 'cer',
-  :password            => 's@omeB1gSecr3t',
-  :certificate_content => 'MIIFyjCCA7KgAwIBAgIEAJiWjDANBgkqhkiG9w0BAQsFADBaMQswCQYDVQQGEwJOTDEeMBwGA1UE
+example = {
+  name: 'LocalMachine\Store\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
+  ensure: :present,
+  path: 'LocalMachine\Store\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
+  format: 'cer',
+  password: 's@omeB1gSecr3t',
+  certificate_content: 'MIIFyjCCA7KgAwIBAgIEAJiWjDANBgkqhkiG9w0BAQsFADBaMQswCQYDVQQGEwJOTDEeMBwGA1UE
           CgwVU3RhYXQgZGVyIE5lZGVybGFuZGVuMSswKQYDVQQDDCJTdGFhdCBkZXIgTmVkZXJsYW5kZW4g
           Um9vdCBDQSAtIEcyMB4XDTA4MDMyNjExMTgxN1oXDTIwMDMyNTExMDMxMFowWjELMAkGA1UEBhMC
           TkwxHjAcBgNVBAoMFVN0YWF0IGRlciBOZWRlcmxhbmRlbjErMCkGA1UEAwwiU3RhYXQgZGVyIE5l
@@ -35,7 +35,6 @@ EXAMPLE = {
 }
 
 describe type_class do
-
   let :params do
     [
       :path
@@ -47,57 +46,57 @@ describe type_class do
       :ensure,
       :format,
       :password,
-      :certificate_content,
+      :certificate_content
     ]
   end
 
-  it 'should have expected properties' do
-    properties.each do |property|    
+  it 'has expected properties' do
+    properties.each do |property|
       expect(type_class.properties.map(&:name)).to be_include(property)
     end
   end
 
-  it 'should have expected parameters' do
+  it 'has expected parameters' do
     params.each do |param|
       expect(type_class.parameters).to be_include(param)
     end
   end
 
-  it 'should require a certificate_name' do
+  it 'requires a certificate_name' do
     expect {
       type_class.new({})
     }.to raise_error(Puppet::Error, 'Title or name must be provided')
   end
 
   describe 'validate values' do
-    it "With  correct values" do
+    it 'with  correct values' do
       expect {
-        correct = EXAMPLE
+        correct = example
         type_class.new(correct)
-      }.to_not raise_error(Puppet::ResourceError, //)
+      }.not_to raise_error(Puppet::ResourceError, %r{})
     end
   end
-  describe 'With incorrect values' do
-    it "With incorrect store in path" do
+  describe 'with incorrect values' do
+    it 'with incorrect store in path' do
       expect {
-        incorrect_store = EXAMPLE.clone
+        incorrect_store = example.clone
         incorrect_store[:path] = 'LocalMachine\\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89'
         type_class.new(incorrect_store)
-      }.to raise_error(Puppet::ResourceError, /LocalMachine\\<store_dir>\\<thumbprint>/)
+      }.to raise_error(Puppet::ResourceError, %r{LocalMachine\\<store_dir>\\<thumbprint>})
     end
-    it "With incorrect thumbprint in path" do
+    it 'with incorrect thumbprint in path' do
       expect {
-        incorrect_thumbprint = EXAMPLE.clone
+        incorrect_thumbprint = example.clone
         incorrect_thumbprint[:path] = 'LocalMachine\Is a store\ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'
         type_class.new(incorrect_thumbprint)
-      }.to raise_error(Puppet::ResourceError, /thumbprint of 40 hexadecimal numbers/)
+      }.to raise_error(Puppet::ResourceError, %r{thumbprint of 40 hexadecimal numbers})
     end
-    it "With incorrect format" do
+    it 'with incorrect format' do
       expect {
-        incorrect_format = EXAMPLE.clone
+        incorrect_format = example.clone
         incorrect_format[:format] = 'cmd'
         type_class.new(incorrect_format)
-      }.to raise_error(Puppet::ResourceError, /Valid values are cer, crt, pfx/)
+      }.to raise_error(Puppet::ResourceError, %r{Valid values are cer, crt, pfx})
     end
   end
 end

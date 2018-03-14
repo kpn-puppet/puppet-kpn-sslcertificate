@@ -6,14 +6,14 @@ provider_class    = provider_resource.provider(:cert)
 describe provider_class do
   subject { provider_class }
 
-  let (:resource) {
+  let(:resource) do
     provider_resource.new(
-      :name                => 'any_certificate',
-      :ensure              => 'present',
-      :path                => 'LocalMachine\\Store\\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
-      :format              => 'cer',
-      :password            => 's@omeB1gSecr3t',
-      :certificate_content => 'MIIFyjCCA7KgAwIBAgIEAJiWjDANBgkqhkiG9w0BAQsFADBaMQswCQYDVQQGEwJOTDEeMBwGA1UE
+      name: 'any_certificate',
+      ensure: 'present',
+      path:  'LocalMachine\\Store\\670A1B2C3D4E5F89670A1B2C3D4E5F89ABCDEF89',
+      format: 'cer',
+      password: 's@omeB1gSecr3t',
+      certificate_content: 'MIIFyjCCA7KgAwIBAgIEAJiWjDANBgkqhkiG9w0BAQsFADBaMQswCQYDVQQGEwJOTDEeMBwGA1UE
               CgwVU3RhYXQgZGVyIE5lZGVybGFuZGVuMSswKQYDVQQDDCJTdGFhdCBkZXIgTmVkZXJsYW5kZW4g
               Um9vdCBDQSAtIEcyMB4XDTA4MDMyNjExMTgxN1oXDTIwMDMyNTExMDMxMFowWjELMAkGA1UEBhMC
               TkwxHjAcBgNVBAoMFVN0YWF0IGRlciBOZWRlcmxhbmRlbjErMCkGA1UEAwwiU3RhYXQgZGVyIE5l
@@ -41,45 +41,42 @@ describe provider_class do
               IPVVYpbtbZNQvOSqeK3Zywplh6ZmwcSBo3c6WB4L7oOLnR7SUqTMHW+wmG2UMbX4cQrcufx9MmDm
               66+KAQ==',
     )
-  }
-  let (:provider) { described_class.new(resource) }
+  end
+  let(:provider) { described_class.new(resource) }
 
-    describe 'provider' do
-      it 'should be an instance of Puppet::Type::Sslcertificate::ProviderCert' do
-        expect(provider).to be_an_instance_of Puppet::Type::Sslcertificate::ProviderCert
-      end
+  describe 'provider' do
+    it 'is an instance of Puppet::Type::Sslcertificate::ProviderCert' do
+      expect(provider).to be_an_instance_of Puppet::Type::Sslcertificate::ProviderCert
+    end
 
-      it 'should respond to function calls' do
-        expect(provider).to respond_to(:path)
-        expect(provider).to respond_to(:ensure)
-        expect(provider).to respond_to(:flush)
-        expect(provider.class).to respond_to(:instances)
-        expect(provider.class).to respond_to(:prefetch)
-      end
+    it 'responds to function calls' do
+      expect(provider).to respond_to(:path)
+      expect(provider).to respond_to(:ensure)
+      expect(provider).to respond_to(:flush)
+      expect(provider.class).to respond_to(:instances)
+      expect(provider.class).to respond_to(:prefetch)
+    end
 
     describe 'instances' do
-      it 'should return certificate properties' do
-
+      it 'returns certificate properties' do
         sslcertifs = "PSPath    : Microsoft.PowerShell.Security\\Certificate::LocalMachine\\Root\\CDD4EEAE6000AC7F40C3802C171E30148030C072\n
 Subject   : CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com\n
 Issuer    : CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com\n
 NotBefore : 5/10/2001 1:19:22 AM\n
 NotAfter  : 5/10/2021 1:28:13 AM\n"
 
-#        provider.class.stubs(:certificate_list => sslcertifs)
-
-        provider.class.stubs(:powershell => sslcertifs)
+        provider.class.stubs(powershell: sslcertifs)
         provider.class.expects(:new)
-          .with(
-            :name       => 'LocalMachine\\Root\\CDD4EEAE6000AC7F40C3802C171E30148030C072',
-            :path       => 'LocalMachine\\Root\\CDD4EEAE6000AC7F40C3802C171E30148030C072',
-            :ensure     => :present,
-            :thumbprint => 'CDD4EEAE6000AC7F40C3802C171E30148030C072',
-            :issuer     => ' CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com',
-            :subject    => ' CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com',
-            :valid_from => '5/10/2001',
-            :valid_till => '5/10/2021',
-          )
+                .with(
+                  name:       'LocalMachine\\Root\\CDD4EEAE6000AC7F40C3802C171E30148030C072',
+                  path:       'LocalMachine\\Root\\CDD4EEAE6000AC7F40C3802C171E30148030C072',
+                  ensure:     :present,
+                  thumbprint: 'CDD4EEAE6000AC7F40C3802C171E30148030C072',
+                  issuer:     ' CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com',
+                  subject:    ' CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com',
+                  valid_from: '5/10/2001',
+                  valid_till: '5/10/2021',
+                )
         provider.class.instances
       end
     end
@@ -87,14 +84,14 @@ NotAfter  : 5/10/2021 1:28:13 AM\n"
     describe 'self.' do
       describe 'prefetch' do
         context 'with valid resource' do
-          it 'should store prov into resource.provider' do
-            prov_mock = mock()
+          it 'stores prov into resource.provider' do
+            prov_mock = mock
             prov_mock.expects(:name).returns('foo')
-            resource_mock = mock()
+            resource_mock = mock
             resource_mock.expects(:provider=)
             resources = {}
             resources['foo'] = resource_mock
-            provider.class.stubs(:instances => [prov_mock])
+            provider.class.stubs(instances: [prov_mock])
             provider.class.prefetch(resources)
           end
         end

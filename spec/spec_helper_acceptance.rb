@@ -3,9 +3,9 @@ require 'beaker-rspec/helpers/serverspec'
 require 'beaker/puppet_install_helper'
 require_relative 'spec_helper_acceptance_methods'
 
-UNSUPPORTED_PLATFORMS = ['RedHat']
+UNSUPPORTED_PLATFORMS = ['RedHat'].freeze
 
-unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
+unless ENV['RS_PROVISION'] == 'no' || ENV['BEAKER_provision'] == 'no'
   # Install Puppet Enterprise Agent
   run_puppet_install_helper
 
@@ -26,7 +26,6 @@ RSpec.configure do |c|
 
   # Configure all nodes in nodeset
   c.before :suite do
-    puppet_module_install(:source => proj_root, :module_name => 'sslcertificate')
+    puppet_module_install(source: proj_root, module_name: 'sslcertificate')
   end
 end
-

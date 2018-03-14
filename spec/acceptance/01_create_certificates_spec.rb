@@ -1,11 +1,9 @@
 require 'spec_helper_acceptance'
 
-describe 'sslcertificate', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
-
-  context 'install 2 certificates' do
-
-    it 'should work idempotently with no errors' do
-      pp = <<-EOS
+describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
+  context 'with installing 2 certificates' do
+    it 'works idempotently with no errors' do
+      pp = <<-CERT
       # Create certificates
 
       sslcertificate { 'certificaat_cer':
@@ -84,21 +82,19 @@ describe 'sslcertificate', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
           IPVVYpbtbZNQvOSqeK3Zywplh6ZmwcSBo3c6WB4L7oOLnR7SUqTMHW+wmG2UMbX4cQrcufx9MmDm
           66+KAQ==',
       }
-      EOS
+      CERT
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe command('powershell.exe "(Get-ChildItem Cert:\LocalMachine\CA\4EB251A8CA19975AE959E26D41F12A82B9DE761B).thumbprint"') do
-      its(:stdout) { is_expected.to match /4EB251A8CA19975AE959E26D41F12A82B9DE761B/ }
+      its(:stdout) { is_expected.to match %r{4EB251A8CA19975AE959E26D41F12A82B9DE761B} }
     end
 
     describe command('powershell.exe "(Get-ChildItem Cert:\LocalMachine\Root\59AF82799186C7B47507CBCF035746EB04DDB716).thumbprint"') do
-      its(:stdout) { is_expected.to match /59AF82799186C7B47507CBCF035746EB04DDB716/ }
+      its(:stdout) { is_expected.to match %r{59AF82799186C7B47507CBCF035746EB04DDB716} }
     end
-
-  end # with default parameters
-
-end # security_policy_class
+  end
+end
