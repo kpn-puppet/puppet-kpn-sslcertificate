@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Type # sslcertificate.rb
 Puppet::Type.newtype(:sslcertificate) do
   desc 'Puppet type that manages Windows certificates'
