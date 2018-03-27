@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
@@ -16,7 +18,7 @@ describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily
       }
       CERT
       # Run it twice and test for idempotency
-      if fact('operatingsystemmajrelease') =~ %r{/2008/}
+      if fact('operatingsystemmajrelease').match?(%r{/2008/})
         apply_manifest(pp, catch_failures: true)
       end
       apply_manifest(pp, catch_failures: true)
