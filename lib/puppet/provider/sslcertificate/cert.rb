@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provider # cert.rb
 
 Puppet::Type.type(:sslcertificate).provide(:cert) do
