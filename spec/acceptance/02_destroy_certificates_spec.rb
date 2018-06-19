@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
@@ -16,9 +18,11 @@ describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily
       }
       CERT
       # Run it twice and test for idempotency
-      if fact('operatingsystemmajrelease') =~ %r{/2008/}
+      # rubocop:disable Performance/RegexpMatch
+      if fact('operatingsystemmajrelease') =~ %r{2008}
         apply_manifest(pp, catch_failures: true)
       end
+      # rubocop:enable Performance/RegexpMatch
       apply_manifest(pp, catch_failures: true)
       apply_manifest(pp, catch_changes: true)
     end

@@ -1,3 +1,6 @@
+2018-05-04 Release 4.1.1
+- Add support for PEM certificates
+
 2018-03-21 Release 1.0.2
 - Add support for Puppet 5
 

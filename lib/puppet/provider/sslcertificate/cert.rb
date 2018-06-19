@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provider # cert.rb
 
 Puppet::Type.type(:sslcertificate).provide(:cert) do
@@ -30,9 +32,9 @@ Puppet::Type.type(:sslcertificate).provide(:cert) do
     @property_hash[:ensure] == :present
   end
 
-  def self.write_cer_to_cert_file(certificate_content)
+  def self.write_to_cert_file(format, certificate_content)
     # This creates a plaintext certificate file to be imported
-    cert_file = 'c:/windows/temp/cert_file.cer'
+    cert_file = "c:/windows/temp/cert_file.#{format}"
     out_file = File.new(cert_file, 'w')
     out_file.puts(certificate_content.to_s)
     out_file.close
@@ -47,10 +49,19 @@ Puppet::Type.type(:sslcertificate).provide(:cert) do
   def create
     # create a certiticate
 
+    format = resource[:format]
+    cert_file = 'c:/windows/temp/cert_file'
+
     case resource[:format]
     when :cer
       # create .cer certificate
-      self.class.write_cer_to_cert_file(resource[:certificate_content])
+      self.class.write_to_cert_file(resource[:format], resource[:certificate_content])
+    when :pem
+      # create .pem certificate and convert to pfx
+      self.class.write_to_cert_file(resource[:format], resource[:certificate_content])
+      system("cmd /c openssl pkcs12 -export -out #{cert_file}.pfx  -passout pass:#{resource[:password]}  -inkey #{cert_file}.pem  -in #{cert_file}.pem -passin pass:#{resource[:password]}")
+      powershell("Remove-Item #{cert_file}.pem")
+      format = 'pfx'
     when :crt
       # create .crt certificate
       self.class.write_base64_to_cert_file(resource[:format], resource[:certificate_content])
@@ -61,10 +72,10 @@ Puppet::Type.type(:sslcertificate).provide(:cert) do
 
     key_storage_flags = resource[:exportable] ? 'Exportable`,PersistKeySet' : 'PersistKeySet'
 
-    self.class.run_import_certificate(resource[:format], resource[:password], key_storage_flags, resource[:name].split('\\')[1], resource[:name].split('\\')[2])
+    self.class.run_import_certificate(format, resource[:password], key_storage_flags, resource[:name].split('\\')[1], resource[:name].split('\\')[2])
 
     # delete the temporary cert_file
-    powershell("Remove-Item c:/windows/temp/cert_file.#{resource[:format]}")
+    powershell("Remove-Item #{cert_file}.#{format}")
   end
 
   def destroy
@@ -167,7 +178,7 @@ Puppet::Type.type(:sslcertificate).provide(:cert) do
       }
       ".PFX" {
         $pfx = new-object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
-        $pfx.import("$certname","$password","$key_storage_flags")
+        $pfx.Import("$certname","$password","$key_storage_flags")
       }
     }
   } catch {exit 13}
