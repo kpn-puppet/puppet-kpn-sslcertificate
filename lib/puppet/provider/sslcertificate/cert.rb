@@ -59,7 +59,7 @@ Puppet::Type.type(:sslcertificate).provide(:cert) do
       self.class.write_base64_to_cert_file(resource[:format], resource[:certificate_content])
     end
 
-    key_storage_flags = resource[:exportable] ? 'Exportable`,PersistKeySet' : 'PersistKeySet'
+    key_storage_flags = resource[:exportable] ? 'Exportable`,PersistKeySet`,MachineKeySet' : 'PersistKeySet`,MachineKeySet'
 
     self.class.run_import_certificate(resource[:format], resource[:password], key_storage_flags, resource[:name].split('\\')[1], resource[:name].split('\\')[2])
 
