@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 provider_resource = Puppet::Type.type(:sslcertificate)
