@@ -1,8 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'sslcertificate', unless: UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   context 'with installing 2 certificates' do
     it 'works idempotently with no errors' do
+      pp = <<-OPENSSL
+      include sslcertificate
+      OPENSSL
+
+      apply_manifest(pp, catch_failures: true)
+
       pp = <<-CERT
       # Create certificates
 

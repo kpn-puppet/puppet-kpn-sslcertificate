@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 type_class = Puppet::Type.type(:sslcertificate)
@@ -76,6 +78,7 @@ describe type_class do
       }.not_to raise_error(Puppet::ResourceError, %r{})
     end
   end
+
   describe 'with incorrect values' do
     it 'with incorrect store in path' do
       expect {

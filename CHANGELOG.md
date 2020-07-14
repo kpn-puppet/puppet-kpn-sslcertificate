@@ -1,5 +1,12 @@
+2020-07-14 Release 2.0.0
+- change certificate install powershell script to not use string evaluation where not needed.
+  * This allows e.g. a $ character in the password (a single quote still causes problems as it terminates the string)
+- add windows 2019 as a supported platform
+- fix rspec and beaker tests
+- add support for PEM certificates
+
 2018-03-21 Release 1.0.2
-- Add support for Puppet 5
+- add support for Puppet 5
 
 2018-03-15 Release 1.0.1
 - updated README.md
